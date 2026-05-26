@@ -29,7 +29,8 @@ export class CustomerController {
   @UseBefore(Authenticate)
   async getAll(@Req() req: Request, @Res() res: Response) {
     try {
-      return this.customerService.getAll(req.query as unknown as SearchParams);
+      const response = await this.customerService.getAll(req.query as unknown as SearchParams);
+      return response;
     } catch (err) {
       return new ErrorHandler(res, err);
     }
