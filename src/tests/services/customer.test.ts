@@ -27,24 +27,26 @@ describe('CustomerService', () => {
       taxIdentifier: '12345678900',
       type: CustomerType.PERSON,
     };
+    const createdBy = 'user-id';
 
-    it('should create customer with correct data', async () => {
+    it('should create customer with correct data including createdBy', async () => {
       mockRepository.create.mockResolvedValue({});
 
-      await customerService.create(customerData);
+      await customerService.create(customerData, createdBy);
 
       expect(mockRepository.create).toHaveBeenCalledWith(CustomerEntity, {
         name: customerData.name,
         email: customerData.email,
         taxIdentifier: customerData.taxIdentifier,
         type: customerData.type,
+        createdBy,
       });
     });
 
     it('should throw AppError when repository fails', async () => {
       mockRepository.create.mockRejectedValue(new Error('DB error'));
 
-      await expect(customerService.create(customerData)).rejects.toBeInstanceOf(AppError);
+      await expect(customerService.create(customerData, createdBy)).rejects.toBeInstanceOf(AppError);
     });
   });
 
@@ -91,21 +93,22 @@ describe('CustomerService', () => {
       taxIdentifier: '98765432100',
       type: CustomerType.ENTERPRISE,
     };
+    const updatedBy = 'user-id';
 
-    it('should update customer when found', async () => {
+    it('should update customer with correct data including updatedBy', async () => {
       mockRepository.selectOneByWhere.mockResolvedValue({ id, name: 'John Doe' });
       mockRepository.update.mockResolvedValue(undefined);
 
-      await customerService.update(id, customerData);
+      await customerService.update(id, customerData, updatedBy);
 
       expect(mockRepository.selectOneByWhere).toHaveBeenCalledWith(CustomerEntity, { id });
-      expect(mockRepository.update).toHaveBeenCalledWith(CustomerEntity, { id }, customerData);
+      expect(mockRepository.update).toHaveBeenCalledWith(CustomerEntity, { id }, { ...customerData, updatedBy });
     });
 
     it('should throw AppError 404 when customer not found', async () => {
       mockRepository.selectOneByWhere.mockResolvedValue(null);
 
-      await expect(customerService.update(id, customerData)).rejects.toMatchObject({
+      await expect(customerService.update(id, customerData, updatedBy)).rejects.toMatchObject({
         errorCode: 404,
         message: 'Cliente não encontrado',
       });
@@ -115,7 +118,7 @@ describe('CustomerService', () => {
       mockRepository.selectOneByWhere.mockResolvedValue({ id, name: 'John Doe' });
       mockRepository.update.mockRejectedValue(new Error('DB error'));
 
-      await expect(customerService.update(id, customerData)).rejects.toBeInstanceOf(AppError);
+      await expect(customerService.update(id, customerData, updatedBy)).rejects.toBeInstanceOf(AppError);
     });
   });
 

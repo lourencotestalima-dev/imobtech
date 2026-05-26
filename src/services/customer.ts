@@ -13,18 +13,17 @@ export class CustomerService implements ICustomerService {
     private readonly customerRepository: GenericRepository
   ) {}
 
-  async create(data: CustomerData): Promise<void> {
+  async create(data: CustomerData, createdBy: string): Promise<void> {
     try {
       const { name, email, taxIdentifier, type } = data;
 
-      const customerToCreate = {
+      await this.customerRepository.create(CustomerEntity, {
         name,
         email,
         taxIdentifier,
-        type
-      };
-
-      await this.customerRepository.create(CustomerEntity, customerToCreate);
+        type,
+        createdBy
+      });
     } catch (err) {
       throw new AppError(400, `Erro ao cadastrar cliente: ${err}`);
     }
@@ -43,7 +42,7 @@ export class CustomerService implements ICustomerService {
     });
   }
 
-  async update(id: string, data: CustomerData): Promise<void> {
+  async update(id: string, data: CustomerData, updatedBy: string): Promise<void> {
     const customerFind = await this.customerRepository.selectOneByWhere(CustomerEntity, { id });
 
     if (!customerFind) {
@@ -51,7 +50,7 @@ export class CustomerService implements ICustomerService {
     }
 
     try {
-      await this.customerRepository.update(CustomerEntity, { id }, data);
+      await this.customerRepository.update(CustomerEntity, { id }, { ...data, updatedBy });
     } catch (err) {
       throw new AppError(400, `Erro ao atualizar cliente: ${err}`);
     }

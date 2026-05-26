@@ -3,7 +3,12 @@
     "allow": [
       "Bash(npm test *)",
       "Bash(npx tsc *)",
-      "Bash(npx jest *)"
+      "Bash(npx jest *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\gabri\\\\Desktop\\\\Desenvolvimento\\\\Projetos Pessoais\\\\ImobTech\\\\backend\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "PowerShell(tree \"c:\\\\Users\\\\gabri\\\\Desktop\\\\Desenvolvimento\\\\Projetos Pessoais\\\\ImobTech\\\\backend\" -L 5 2>$null)",
+      "PowerShell(head -100)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\gabri\\\\Desktop\\\\Desenvolvimento\\\\Projetos Pessoais\\\\ImobTech\\\\backend\\\\src\" -Recurse | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"c:\\\\Users\\\\gabri\\\\Desktop\\\\Desenvolvimento\\\\Projetos Pessoais\\\\ImobTech\\\\backend\\\\\", \"\"\\) })"
     ]
   }
 }
