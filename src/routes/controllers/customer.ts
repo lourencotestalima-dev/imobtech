@@ -47,6 +47,7 @@ export class CustomerController {
   }
 
   @Post('/upload-csv')
+  @UseBefore(Authenticate)
   async uploadCsv(@UploadedFile('file') file: Express.Multer.File, @Res() res: Response) {
     try {
       await this.customerService.uploadCsv(file);
