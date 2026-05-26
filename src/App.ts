@@ -9,8 +9,6 @@ import { getMetadataArgsStorage, useContainer } from 'routing-controllers';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import swaggerUi from 'swagger-ui-express';
-import { AuthController } from './routes/controllers/auth';
-import { CustomerController } from './routes/controllers/customer';
 
 useContainer(Container);
 
@@ -52,13 +50,8 @@ export class App {
       refPointerPrefix: '#/components/schemas/',
     });
 
-    const routingControllersOptions = {
-      controllers: [AuthController, CustomerController],
-      routePrefix: '/api',
-    };
-
     const storage = getMetadataArgsStorage();
-    const spec = routingControllersToSpec(storage, routingControllersOptions, {
+      const spec = routingControllersToSpec(storage, {}, {
       components: {
         schemas,
         securitySchemes: {
@@ -76,7 +69,9 @@ export class App {
       },
     });
 
-    app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
+    app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec, {
+      swaggerOptions: { tagsSorter: 'alpha' },
+    }));
   }
 
   private listen(app: express.Application): void {

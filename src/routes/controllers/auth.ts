@@ -4,8 +4,7 @@ import { Response } from 'express';
 import { AuthService } from '../../services/auth';
 import { UserEntity } from '../../entities/user';
 import { ErrorHandler } from '../../utils/errors/ErrorHandler';
-import { OpenAPI } from 'routing-controllers-openapi';
-import { authRegisterSchema } from './schemas/auth';
+import { AuthLoginData, AuthRegisterData } from '../../models/auth';
 
 @Service()
 @JsonController('/auth')
@@ -14,7 +13,8 @@ export class AuthController {
     @Inject(() => AuthService) private authService: AuthService
   ) {}
 
-  async register(@Body() body: UserEntity, @Res() res: Response): Promise<any> {
+  @Post('/register')
+  async register(@Body() body: AuthRegisterData, @Res() res: Response): Promise<any> {
     try {
       const response = await this.authService.register(body);
       return res.status(200).json(response);
@@ -24,7 +24,7 @@ export class AuthController {
   }
 
   @Post('/login')
-  async login(@Body() body: UserEntity, @Res() res: Response): Promise<any> {
+  async login(@Body() body: AuthLoginData, @Res() res: Response): Promise<any> {
     try {
       const response = await this.authService.login(body);
       return res.status(200).json(response);

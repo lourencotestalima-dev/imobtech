@@ -7,6 +7,10 @@ import { Method, RequestLogger } from '../../logger/request';
 @Middleware({ type: 'before' })
 export class LoggerMiddleware implements ExpressMiddlewareInterface {
   use(req: Request, res: Response, next: NextFunction): void {
+    if (req.url.includes('docs')) {
+      return next();
+    }
+
     const start = Date.now();
 
     let responseBody: unknown;

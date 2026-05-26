@@ -1,6 +1,7 @@
 import { UserEntity } from '../../entities/user';
+import { AuthLoginData, AuthRegisterData } from '../../models/auth';
 
 export interface IAuthService {
-  register(data: UserEntity): Promise<void>;
-  login(data: UserEntity): Promise<{ token: string }>;
+  register(data: AuthRegisterData): Promise<void>;
+  login(data: AuthLoginData): Promise<{ token: string }>;
 }

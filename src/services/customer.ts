@@ -3,7 +3,7 @@ import { CustomerEntity } from '../entities/customer';
 import { GenericRepository } from '../repositories/generic';
 import { ICustomerService } from './interfaces/customer';
 import { AppError } from '../utils/errors/AppError';
-import { CustomerTypeMap, SearchParams } from '../models/customer';
+import { CustomerData, CustomerTypeMap, SearchParams } from '../models/customer';
 import csv from 'csv-parser';
 import { Readable } from 'stream';
 
@@ -13,7 +13,7 @@ export class CustomerService implements ICustomerService {
     private readonly customerRepository: GenericRepository
   ) {}
 
-  async create(data: CustomerEntity): Promise<void> {
+  async create(data: CustomerData): Promise<void> {
     try {
       const { name, email, taxIdentifier, type } = data;
 
@@ -43,7 +43,7 @@ export class CustomerService implements ICustomerService {
     });
   }
 
-  async update(id: string, data: CustomerEntity): Promise<void> {
+  async update(id: string, data: CustomerData): Promise<void> {
     const customerFind = await this.customerRepository.selectOneByWhere(CustomerEntity, { id });
 
     if (!customerFind) {

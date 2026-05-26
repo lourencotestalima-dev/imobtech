@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
-import { Body, Get, JsonController, Param, Post, Put, QueryParams, Req, Res, UploadedFile } from 'routing-controllers';
+import { Body, Get, JsonController, Param, Post, Put, QueryParams, Req, Res, UploadedFile, UseBefore } from 'routing-controllers';
 import { Inject, Service } from 'typedi';
 import { ErrorHandler } from '../../utils/errors/ErrorHandler';
 import { CustomerService } from '../../services/customer';
 import { CustomerEntity } from '../../entities/customer';
-import { SearchParams } from '../../models/customer';
+import { CustomerData, SearchParams } from '../../models/customer';
+import { Authenticate } from '../middlewares/authenticate';
 
 @Service()
 @JsonController('/customer')
@@ -14,7 +15,8 @@ export class CustomerController {
   ) {}
 
   @Post('/')
-  async create(@Body() body: CustomerEntity, @Res() res: Response) {
+  @UseBefore(Authenticate)
+  async create(@Body() body: CustomerData, @Res() res: Response) {
     try {
       await this.customerService.create(body);
       return null;
@@ -24,6 +26,7 @@ export class CustomerController {
   }
 
   @Get('/')
+  @UseBefore(Authenticate)
   async getAll(@Req() req: Request, @Res() res: Response) {
     try {
       return this.customerService.getAll(req.query as unknown as SearchParams);
@@ -33,7 +36,8 @@ export class CustomerController {
   }
 
   @Put('/:id')
-  async update(@Param('id') id: string, @Body() body: CustomerEntity, @Res() res: Response) {
+  @UseBefore(Authenticate)
+  async update(@Param('id') id: string, @Body() body: CustomerData, @Res() res: Response) {
     try {
       await this.customerService.update(id, body);
       return null;

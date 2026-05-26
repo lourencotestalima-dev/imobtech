@@ -8,6 +8,7 @@ import argon2 from 'argon2';
 import constants from '../utils/constants';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { AuthLoginData, AuthRegisterData } from '../models/auth';
 
 @Service()
 export class AuthService implements IAuthService {
@@ -15,7 +16,7 @@ export class AuthService implements IAuthService {
     private readonly userRepository: GenericRepository
   ) {}
 
-  public async register(data: UserEntity): Promise<void> {
+  public async register(data: AuthRegisterData): Promise<void> {
     try {
       const { name, email, password } = data;
 
@@ -30,7 +31,7 @@ export class AuthService implements IAuthService {
     }
   }
 
-  public async login(data: UserEntity): Promise<{ token: string }> {
+  public async login(data: AuthLoginData): Promise<{ token: string }> {
     const { email, password } = data;
 
     const loginExists = await this.userRepository.selectOneByWhere(UserEntity, { email });
