@@ -40,15 +40,23 @@ export class App {
     return app;
   }
 
-  private async database(): Promise<void> {
-    try {
-      await AppDataSource.initialize();
-      await AppDataSource.runMigrations();
-      Container.set(DataSource, AppDataSource);
-      console.log('🌐 Conexão com o Banco de Dados estabelecida com sucesso!');
-    } catch (err) {
-      console.log(`Erro ao se conectar com o Banco de Dados: ${err}`);
-      process.exit(1);
+  private async database(retries = 5, delayMs = 3000): Promise<void> {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        await AppDataSource.initialize();
+        await AppDataSource.runMigrations();
+        Container.set(DataSource, AppDataSource);
+        console.log('🌐 Conexão com o Banco de Dados estabelecida com sucesso!');
+        return;
+      } catch (err) {
+        console.log(`[${attempt}/${retries}] Erro ao conectar ao Banco de Dados: ${err}`);
+        if (attempt === retries) {
+          console.log('Número máximo de tentativas atingido. Encerrando...');
+          process.exit(1);
+        }
+        console.log(`Aguardando ${delayMs / 1000}s antes de tentar novamente...`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
     }
   }
 

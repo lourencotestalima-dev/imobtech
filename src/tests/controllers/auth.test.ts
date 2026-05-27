@@ -35,13 +35,14 @@ describe('AuthController', () => {
       type: 1,
     } as AuthRegisterData;
 
-    it('should call service with body and return 200', async () => {
+    it('should call service with body and return 201 with success message', async () => {
       mockAuthService.register.mockResolvedValue(undefined);
 
       await authController.register(body, res);
 
       expect(mockAuthService.register).toHaveBeenCalledWith(body);
-      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Conta criada com sucesso' });
     });
 
     it('should return 400 when service throws AppError', async () => {

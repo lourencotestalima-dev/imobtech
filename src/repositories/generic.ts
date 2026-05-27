@@ -1,7 +1,7 @@
 import { Inject, Service } from 'typedi';
 import { DataSource, DeepPartial, EntityTarget, FindOptionsWhere, ObjectLiteral, Repository } from 'typeorm';
 import { IGenericRepository } from './interfaces/generic';
-import { QueryPartialEntity } from 'typeorm/browser';
+import { QueryPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { PaginationParams } from '../models';
 
 @Service()
@@ -34,7 +34,8 @@ export class GenericRepository implements IGenericRepository {
     return this.getRepo(entity).find({
       where,
       skip,
-      take: limit
+      take: limit,
+      order: pagination?.order ? { createdAt: pagination.order } as any : undefined
     });
   }
 

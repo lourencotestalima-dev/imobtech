@@ -49,13 +49,14 @@ describe('CustomerController', () => {
       type: CustomerType.PERSON,
     } as CustomerData;
 
-    it('should call service with body and session userId and return null', async () => {
+    it('should call service with body and session userId and return 201 with success message', async () => {
       mockCustomerService.create.mockResolvedValue(undefined);
 
-      const result = await customerController.create(req, body, res);
+      await customerController.create(req, body, res);
 
       expect(mockCustomerService.create).toHaveBeenCalledWith(body, req.session!.userId);
-      expect(result).toBeNull();
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Cliente cadastrado com sucesso' });
     });
 
     it('should return 400 when service throws AppError', async () => {

@@ -22,12 +22,44 @@ API REST desenvolvida em Node.js para gerenciamento de clientes no setor imobili
 
 ## Pré-requisitos
 
-- Node.js 20+
-- PostgreSQL 14+ **ou** Docker + Docker Compose
+- Node.js 20+ **ou** Docker
 
 ---
 
-## Rodando localmente
+## Opção 1 — Rodando com Docker (recomendado)
+
+A forma mais simples. Sobe a API e o PostgreSQL juntos, sem precisar instalar nada além do Docker.
+
+```bash
+docker-compose up --build
+```
+
+Aguarde a mensagem:
+```
+🌐 Conexão com o Banco de Dados estabelecida com sucesso!
+Servidor rodando na porta 3000...
+```
+
+> A API já roda as migrations automaticamente na primeira inicialização.
+
+**Rodar:**
+```bash
+docker-compose up --build
+```
+
+**Parar:**
+```bash
+docker-compose down
+```
+
+**Parar e apagar os dados do banco:**
+```bash
+docker-compose down -v
+```
+
+---
+
+## Opção 2 — Rodando localmente
 
 ### 1. Clonar e instalar dependências
 
@@ -46,9 +78,9 @@ cp .env.example .env
 
 | Variável | Descrição | Exemplo |
 |---|---|---|
-| `PORT` | Porta da API | `3000` |
 | `DATABASE_URL` | Connection string do PostgreSQL | `postgres://user:pass@localhost:5432/imobtech` |
 | `JWT_PRIVATE_KEY` | Chave secreta para assinar tokens JWT | `super-secret-key` |
+| `PORT` | Porta da API (opcional) | `3000` |
 
 ### 3. Executar migrations
 
@@ -62,30 +94,19 @@ npm run migration:run
 npm run dev
 ```
 
-### 5. Acessar a documentação
-
-```
-http://localhost:3000/docs
-```
-
 ---
 
-## Rodando com Docker
+## Acessar a documentação
 
-```bash
-# Sobe API + PostgreSQL
-docker-compose up --build
-
-# Em background
-docker-compose up --build -d
 ```
-
-O `docker-compose.yml` já inclui healthcheck no banco — a API só sobe após o PostgreSQL estar pronto.
+Com a aplicação rodando, basta acessar: http://localhost:3000/docs
+```
 
 ---
 
 ## Rodando os testes
 
+Basta usar o comando abaixo:
 ```bash
 npm test
 ```

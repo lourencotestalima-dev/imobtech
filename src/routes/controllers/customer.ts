@@ -21,7 +21,7 @@ export class CustomerController {
   async create(@Req() req: ICustomRequest, @Body() body: CustomerData, @Res() res: Response) {
     try {
       await this.customerService.create(body, req.session!.userId);
-      return null;
+      return res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
     } catch (err) {
       return new ErrorHandler(res, err);
     }

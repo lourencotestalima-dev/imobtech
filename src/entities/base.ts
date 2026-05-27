@@ -10,19 +10,19 @@ export class BaseEntity {
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date;
 
-  @Column()
+  @Column({ nullable: true })
   createdBy?: string;
 
   @Transform(({ value }) => DateTime.fromJSDate(value).setZone('America/Sao_Paulo').toISO())
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt!: Date;
 
-  @Column()
+  @Column({ nullable: true })
   updatedBy?: string;
 
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt?: Date;
 
-  @Column()
+  @Column({ nullable: true })
   deletedBy?: string;
 }

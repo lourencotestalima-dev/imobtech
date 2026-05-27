@@ -15,8 +15,8 @@ export class AuthController {
   @Post('/register')
   async register(@Body() body: AuthRegisterData, @Res() res: Response): Promise<any> {
     try {
-      const response = await this.authService.register(body);
-      return res.status(200).json(response);
+      await this.authService.register(body);
+      return res.status(201).json({ message: 'Conta criada com sucesso' });
     } catch (err) {
       return new ErrorHandler(res, err);
     }

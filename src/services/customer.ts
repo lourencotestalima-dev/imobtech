@@ -16,9 +16,15 @@ export class CustomerService implements ICustomerService {
   ) {}
 
   async create(data: CustomerData, createdBy: string): Promise<void> {
-    try {
-      const { name, email, taxIdentifier, type } = data;
+    const { name, email, taxIdentifier, type } = data;
 
+    const findEmail = await this.customerRepository.selectOneByWhere(CustomerEntity, { email });
+
+    if (findEmail) {
+      throw new AppError(409, 'Já existe um cliente com esse email');
+    }
+
+    try {
       await this.customerRepository.create(CustomerEntity, {
         name,
         email,
