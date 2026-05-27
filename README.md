@@ -8,15 +8,13 @@ API REST desenvolvida em Node.js para gerenciamento de clientes no setor imobili
 
 | Tecnologia | Justificativa |
 |---|---|
-| **Node.js + TypeScript** | Tipagem estática elimina erros em tempo de desenvolvimento e documenta contratos entre camadas |
 | **Express + routing-controllers** | Decorators tornam a definição de rotas declarativa e integram nativamente com TypeDI e OpenAPI |
-| **PostgreSQL** | Banco relacional com suporte a UUID nativo, transações ACID e `gen_random_uuid()` sem extensão externa |
-| **TypeORM** | Migrations versionadas garantem rastreabilidade de schema; soft-delete nativo via `@DeleteDateColumn` |
-| **TypeDI** | Injeção de dependência simplifica testes (troca de implementações via mock) e gerencia ciclo de vida dos serviços |
-| **argon2** | Algoritmo vencedor do Password Hashing Competition — superior ao bcrypt em resistência a ataques de GPU |
-| **Pino** | Logger estruturado de alta performance (JSON); integração direta com ferramentas de observabilidade |
-| **class-validator** | Validação declarativa via decorators alinhada com o modelo de dados |
-| **Swagger (routing-controllers-openapi)** | Documentação gerada automaticamente a partir dos metadados dos controllers — sem duplicação |
+| **PostgreSQL** | Banco relacional extramemente utilizado e completo |
+| **TypeORM** | ORM muito utilizado para Banco de Dados relacionais com migrations versionadas, garantindo rastreabilidade e permitindo reversão das alterações
+| **TypeDI** | Injeção de dependência de forma simples, sem exigir muita configuração
+| **argon2** | Algoritmo muito seguro e confiável para criptografia |
+| **Pino** | Logger estruturado de alta performance, sem complexidade ou configuraçao desnecessária |
+| **Swagger (routing-controllers-openapi)** | Documentação gerada automaticamente a partir dos endpoints
 
 ---
 
