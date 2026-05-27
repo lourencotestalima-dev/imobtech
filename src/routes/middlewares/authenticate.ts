@@ -1,7 +1,7 @@
-import { ExpressMiddlewareInterface, Middleware } from 'routing-controllers';
+import { ExpressMiddlewareInterface } from 'routing-controllers';
 import { Inject, Service } from 'typedi';
-import { IGenericRepository } from '../../repositories/interfaces/generic';
-import { NextFunction, Request, Response } from 'express';
+import { GenericRepository } from '../../repositories/generic';
+import { NextFunction, Response } from 'express';
 import constants from '../../utils/constants';
 import { UserEntity } from '../../entities/user';
 import jwt from 'jsonwebtoken';
@@ -10,8 +10,8 @@ import { ICustomRequest } from '../../models/request';
 @Service()
 export class Authenticate implements ExpressMiddlewareInterface {
   constructor(
-    private readonly userRepository: IGenericRepository,
-  ){}
+    @Inject(() => GenericRepository) private readonly userRepository: GenericRepository,
+  ) {}
 
   async use(req: ICustomRequest, res: Response, next: NextFunction) {
     const token = req.headers.authorization && req.headers.authorization.split('Bearer ')[1];

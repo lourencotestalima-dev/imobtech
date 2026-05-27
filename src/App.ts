@@ -51,7 +51,7 @@ export class App {
     });
 
     const storage = getMetadataArgsStorage();
-      const spec = routingControllersToSpec(storage, {}, {
+    const spec = routingControllersToSpec(storage, {}, {
       components: {
         schemas,
         securitySchemes: {

@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { Body, Get, JsonController, Param, Post, Put, Req, Res, UploadedFile, UseBefore } from 'routing-controllers';
+import { OpenAPI } from 'routing-controllers-openapi';
 import { Inject, Service } from 'typedi';
 import { ErrorHandler } from '../../utils/errors/ErrorHandler';
 import { CustomerService } from '../../services/customer';
@@ -8,6 +9,7 @@ import { Authenticate } from '../middlewares/authenticate';
 import { ICustomRequest } from '../../models/request';
 
 @Service()
+@OpenAPI({ security: [{ bearerAuth: [] }] })
 @JsonController('/customer')
 export class CustomerController {
   constructor(
