@@ -1,6 +1,9 @@
 import { Get, JsonController } from 'routing-controllers';
+import { Service } from 'typedi';
 import { AppDataSource } from '../../database';
+import { DateTime } from 'luxon';
 
+@Service()
 @JsonController('/health')
 export class HealthController {
   @Get('/')
@@ -10,7 +13,7 @@ export class HealthController {
     return {
       status: dbConnected ? 'ok' : 'degraded',
       database: dbConnected ? 'connected' : 'disconnected',
-      timestamp: new Date().toISOString(),
+      timestamp: DateTime.fromJSDate(new Date()).setZone('America/Sao_Paulo').toISO()
     };
   }
 }

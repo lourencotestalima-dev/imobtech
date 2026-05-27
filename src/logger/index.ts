@@ -1,7 +1,12 @@
 import { DateTime } from 'luxon';
 import pino from 'pino';
+import fs from 'fs';
+import path from 'path';
 
-export const createLogger = (destionation: string) => pino(
+export const createLogger = (destionation: string) => {
+  fs.mkdirSync(path.dirname(destionation), { recursive: true });
+
+  return pino(
   {
     level: 'info',
     messageKey: 'message',
@@ -19,4 +24,5 @@ export const createLogger = (destionation: string) => pino(
     dest: destionation,
     sync: false
   })
-);
+  );
+};

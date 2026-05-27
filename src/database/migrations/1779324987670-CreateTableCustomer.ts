@@ -27,7 +27,8 @@ export class CreateTableCustomer1779324987670 implements MigrationInterface {
         {
           name: 'email',
           type: 'varchar',
-          isNullable: false
+          isNullable: false,
+          isUnique: true
         },
         {
           name: 'type',

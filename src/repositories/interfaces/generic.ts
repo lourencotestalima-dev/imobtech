@@ -1,6 +1,6 @@
 import { DeepPartial, EntityTarget, FindOptionsWhere, ObjectLiteral } from 'typeorm';
 import { QueryPartialEntity } from 'typeorm/browser';
-import { PaginationParams } from '../models';
+import { PaginationParams } from '../../models';
 
 export interface IGenericRepository {
   create<T extends ObjectLiteral>(entity: EntityTarget<T>, data: DeepPartial<T>): Promise<T>;

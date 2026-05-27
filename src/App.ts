@@ -43,6 +43,7 @@ export class App {
   private async database(): Promise<void> {
     try {
       await AppDataSource.initialize();
+      await AppDataSource.runMigrations();
       Container.set(DataSource, AppDataSource);
       console.log('🌐 Conexão com o Banco de Dados estabelecida com sucesso!');
     } catch (err) {
