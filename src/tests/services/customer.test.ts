@@ -10,6 +10,7 @@ const mockRepository = {
   selectAllByWhere: jest.fn(),
   update: jest.fn(),
   upsert: jest.fn(),
+  softDelete: jest.fn(),
 };
 
 describe('CustomerService', () => {
@@ -85,6 +86,29 @@ describe('CustomerService', () => {
     });
   });
 
+  describe('getById', () => {
+    const id = 'customer-id';
+
+    it('should return customer when found', async () => {
+      const customer = { id, name: 'John Doe' };
+      mockRepository.selectOneByWhere.mockResolvedValue(customer);
+
+      const result = await customerService.getById(id);
+
+      expect(mockRepository.selectOneByWhere).toHaveBeenCalledWith(CustomerEntity, { id });
+      expect(result).toEqual(customer);
+    });
+
+    it('should throw AppError 404 when customer not found', async () => {
+      mockRepository.selectOneByWhere.mockResolvedValue(null);
+
+      await expect(customerService.getById(id)).rejects.toMatchObject({
+        errorCode: 404,
+        message: 'Cliente não encontrado',
+      });
+    });
+  });
+
   describe('update', () => {
     const id = 'customer-id';
     const customerData: CustomerData = {
@@ -122,6 +146,37 @@ describe('CustomerService', () => {
     });
   });
 
+  describe('delete', () => {
+    const id = 'customer-id';
+    const deletedBy = 'user-id';
+
+    it('should soft-delete customer with deletedBy', async () => {
+      mockRepository.selectOneByWhere.mockResolvedValue({ id, name: 'John Doe' });
+      mockRepository.softDelete.mockResolvedValue(undefined);
+
+      await customerService.delete(id, deletedBy);
+
+      expect(mockRepository.selectOneByWhere).toHaveBeenCalledWith(CustomerEntity, { id });
+      expect(mockRepository.softDelete).toHaveBeenCalledWith(CustomerEntity, { id }, deletedBy);
+    });
+
+    it('should throw AppError 404 when customer not found', async () => {
+      mockRepository.selectOneByWhere.mockResolvedValue(null);
+
+      await expect(customerService.delete(id, deletedBy)).rejects.toMatchObject({
+        errorCode: 404,
+        message: 'Cliente não encontrado',
+      });
+    });
+
+    it('should throw AppError when softDelete fails', async () => {
+      mockRepository.selectOneByWhere.mockResolvedValue({ id, name: 'John Doe' });
+      mockRepository.softDelete.mockRejectedValue(new Error('DB error'));
+
+      await expect(customerService.delete(id, deletedBy)).rejects.toBeInstanceOf(AppError);
+    });
+  });
+
   describe('uploadCsv', () => {
     it('should throw AppError 404 when file is missing', async () => {
       await expect(customerService.uploadCsv(null as any)).rejects.toMatchObject({
@@ -144,8 +199,18 @@ describe('CustomerService', () => {
       );
     });
 
+    it('should throw AppError when CSV has invalid rows', async () => {
+      const csvContent = 'name,email,taxIdentifier,type\nJohn Doe,not-an-email,12345678900,PF\n';
+      const file = { buffer: Buffer.from(csvContent) } as Express.Multer.File;
+
+      await expect(customerService.uploadCsv(file)).rejects.toMatchObject({
+        errorCode: 400,
+        message: expect.stringContaining('Erros de validação no CSV'),
+      });
+    });
+
     it('should throw AppError when upsert fails', async () => {
-      const csvContent = 'name,email,taxIdentifier,type\nJohn,john@example.com,12345678900,PF\n';
+      const csvContent = 'name,email,taxIdentifier,type\nJohn Doe,john@example.com,12345678900,PF\n';
       const file = { buffer: Buffer.from(csvContent) } as Express.Multer.File;
       mockRepository.upsert.mockRejectedValue(new Error('DB error'));
 

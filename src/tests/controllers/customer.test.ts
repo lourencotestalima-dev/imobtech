@@ -9,7 +9,9 @@ import { ICustomRequest } from '../../models/request';
 const mockCustomerService = {
   create: jest.fn(),
   getAll: jest.fn(),
+  getById: jest.fn(),
   update: jest.fn(),
+  delete: jest.fn(),
   uploadCsv: jest.fn(),
 };
 
@@ -108,6 +110,38 @@ describe('CustomerController', () => {
     });
   });
 
+  describe('getById', () => {
+    const id = 'customer-id';
+    const customer = { id, name: 'John Doe' };
+
+    it('should call service with id and return customer', async () => {
+      mockCustomerService.getById.mockResolvedValue(customer);
+
+      const result = await customerController.getById(id, res);
+
+      expect(mockCustomerService.getById).toHaveBeenCalledWith(id);
+      expect(result).toEqual(customer);
+    });
+
+    it('should return 404 when service throws AppError', async () => {
+      mockCustomerService.getById.mockRejectedValue(new AppError(404, 'Cliente não encontrado'));
+
+      await customerController.getById(id, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Cliente não encontrado' });
+    });
+
+    it('should return 500 on unexpected error', async () => {
+      mockCustomerService.getById.mockRejectedValue(new Error('Unexpected'));
+
+      await customerController.getById(id, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Internal Server Error' });
+    });
+  });
+
   describe('update', () => {
     const id = 'customer-id';
     const body = {
@@ -139,6 +173,37 @@ describe('CustomerController', () => {
       mockCustomerService.update.mockRejectedValue(new Error('Unexpected'));
 
       await customerController.update(req, id, body, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Internal Server Error' });
+    });
+  });
+
+  describe('delete', () => {
+    const id = 'customer-id';
+
+    it('should call service with id and session userId and return null', async () => {
+      mockCustomerService.delete.mockResolvedValue(undefined);
+
+      const result = await customerController.delete(req, id, res);
+
+      expect(mockCustomerService.delete).toHaveBeenCalledWith(id, req.session!.userId);
+      expect(result).toBeNull();
+    });
+
+    it('should return 404 when service throws AppError', async () => {
+      mockCustomerService.delete.mockRejectedValue(new AppError(404, 'Cliente não encontrado'));
+
+      await customerController.delete(req, id, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Cliente não encontrado' });
+    });
+
+    it('should return 500 on unexpected error', async () => {
+      mockCustomerService.delete.mockRejectedValue(new Error('Unexpected'));
+
+      await customerController.delete(req, id, res);
 
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ message: 'Internal Server Error' });

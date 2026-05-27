@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { Body, Get, JsonController, Param, Post, Put, Req, Res, UploadedFile, UseBefore } from 'routing-controllers';
+import { Body, Delete, Get, JsonController, Param, Post, Put, Req, Res, UploadedFile, UseBefore } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
 import { Inject, Service } from 'typedi';
 import { ErrorHandler } from '../../utils/errors/ErrorHandler';
@@ -13,7 +13,7 @@ import { ICustomRequest } from '../../models/request';
 @JsonController('/customer')
 export class CustomerController {
   constructor(
-  @Inject(() => CustomerService) private customerService: CustomerService
+    @Inject(() => CustomerService) private customerService: CustomerService
   ) {}
 
   @Post('/')
@@ -38,11 +38,33 @@ export class CustomerController {
     }
   }
 
+  @Get('/:id')
+  @UseBefore(Authenticate)
+  async getById(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const response = await this.customerService.getById(id);
+      return response;
+    } catch (err) {
+      return new ErrorHandler(res, err);
+    }
+  }
+
   @Put('/:id')
   @UseBefore(Authenticate)
   async update(@Req() req: ICustomRequest, @Param('id') id: string, @Body() body: CustomerData, @Res() res: Response) {
     try {
       await this.customerService.update(id, body, req.session!.userId);
+      return null;
+    } catch (err) {
+      return new ErrorHandler(res, err);
+    }
+  }
+
+  @Delete('/:id')
+  @UseBefore(Authenticate)
+  async delete(@Req() req: ICustomRequest, @Param('id') id: string, @Res() res: Response) {
+    try {
+      await this.customerService.delete(id, req.session!.userId);
       return null;
     } catch (err) {
       return new ErrorHandler(res, err);

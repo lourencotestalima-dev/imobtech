@@ -2,7 +2,6 @@ import { Service } from 'typedi';
 import { UserEntity } from '../entities/user';
 import { GenericRepository } from '../repositories/generic';
 import { IAuthService } from './interfaces/auth';
-import { UserType } from '../models/user';
 import { AppError } from '../utils/errors/AppError';
 import argon2 from 'argon2';
 import constants from '../utils/constants';
@@ -18,13 +17,13 @@ export class AuthService implements IAuthService {
 
   public async register(data: AuthRegisterData): Promise<void> {
     try {
-      const { name, email, password } = data;
+      const { name, email, password, type } = data;
 
       await this.userRepository.create(UserEntity, {
         name,
         email,
         password,
-        type: UserType.ADMIN
+        type
       });
     } catch (err) {
       throw new AppError(400, `Erro ao criar conta: ${err}`);

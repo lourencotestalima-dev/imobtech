@@ -9,22 +9,35 @@ import { getMetadataArgsStorage, useContainer } from 'routing-controllers';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import swaggerUi from 'swagger-ui-express';
+import rateLimit from 'express-rate-limit';
 
 useContainer(Container);
+
+const authRateLimiter = rateLimit({
+  windowMs: 2 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Muitas tentativas. Tente novamente em instantes.' },
+});
 
 export class App {
   private express: express.Application;
   private PORT: number;
 
-  constructor() {
+  private constructor() {
     this.express = express();
     this.PORT = constants.port;
+  }
 
-    this.database();
-    this.middleware();
-    this.routes(this.express);
-    this.documentation(this.express);
-    this.listen(this.express);
+  static async create(): Promise<App> {
+    const app = new App();
+    await app.database();
+    app.middleware();
+    app.routes(app.express);
+    app.documentation(app.express);
+    app.listen(app.express);
+    return app;
   }
 
   private async database(): Promise<void> {
@@ -32,13 +45,15 @@ export class App {
       await AppDataSource.initialize();
       Container.set(DataSource, AppDataSource);
       console.log('🌐 Conexão com o Banco de Dados estabelecida com sucesso!');
-    } catch(err) {
-      console.log(`Erro ao se conectar com o Banco de Dados: ${err}`)
+    } catch (err) {
+      console.log(`Erro ao se conectar com o Banco de Dados: ${err}`);
+      process.exit(1);
     }
   }
 
   private middleware(): void {
     this.express.use(cors());
+    this.express.use('/auth', authRateLimiter);
   }
 
   private routes(app: express.Application): void {
@@ -63,14 +78,14 @@ export class App {
         },
       },
       info: {
-        title: 'Minha API Node.js',
+        title: 'ImobTech API',
         version: '1.0.0',
-        description: 'Documentação automática com routing-controllers',
+        description: 'API de cadastro de clientes para o setor imobiliário',
       },
     });
 
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec, {
-      swaggerOptions: { tagsSorter: 'alpha' },
+      swaggerOptions: { tagsSorter: 'alpha', persistAuthorization: true },
     }));
   }
 

@@ -2,7 +2,6 @@ import { Inject, Service } from 'typedi';
 import { Body, JsonController, Post, Res } from 'routing-controllers';
 import { Response } from 'express';
 import { AuthService } from '../../services/auth';
-import { UserEntity } from '../../entities/user';
 import { ErrorHandler } from '../../utils/errors/ErrorHandler';
 import { AuthLoginData, AuthRegisterData } from '../../models/auth';
 

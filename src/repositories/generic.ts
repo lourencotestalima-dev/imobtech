@@ -1,5 +1,5 @@
 import { Inject, Service } from 'typedi';
-import { DataSource, DeepPartial, EntityTarget, FindOneOptions, FindOptionsWhere, ObjectLiteral, Repository } from 'typeorm';
+import { DataSource, DeepPartial, EntityTarget, FindOptionsWhere, ObjectLiteral, Repository } from 'typeorm';
 import { IGenericRepository } from './interfaces/generic';
 import { QueryPartialEntity } from 'typeorm/browser';
 import { PaginationParams } from '../models';
@@ -51,5 +51,10 @@ export class GenericRepository implements IGenericRepository {
   async upsert<T extends ObjectLiteral>(entity: EntityTarget<T>, data: DeepPartial<T>[], conflictPaths: (keyof T)[]): Promise<void> {
     const repo = this.getRepo(entity);
     await repo.upsert(data as T[], conflictPaths as string[]);
+  }
+
+  async softDelete<T extends ObjectLiteral>(entity: EntityTarget<T>, where: FindOptionsWhere<T>, deletedBy: string): Promise<void> {
+    await this.getRepo(entity).update(where, { deletedBy } as unknown as QueryPartialEntity<T>);
+    await this.getRepo(entity).softDelete(where);
   }
 }
